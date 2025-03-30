@@ -3,11 +3,13 @@ package gym.reps.counter.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 @Slf4j
+@UtilityClass
 public class JsonUtil {
     private static final ObjectMapper mapper = new ObjectMapper();
 

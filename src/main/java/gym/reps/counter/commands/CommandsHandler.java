@@ -6,6 +6,9 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Map;
+import java.util.Objects;
+
+import static gym.reps.counter.utils.BotUpdateUtil.getChatId;
 
 @Slf4j
 @Component
@@ -13,7 +16,7 @@ public class CommandsHandler {
 
     private final static String START_COMMAND = "/start";
 
-    private Map<String, Command> commands;
+    private final Map<String, Command> commands;
 
     public CommandsHandler(StartCommand startCommand) {
         commands = Map.of(START_COMMAND, startCommand);
@@ -22,13 +25,12 @@ public class CommandsHandler {
     public SendMessage handleCommands(Update update) {
         String messageText = update.getMessage().getText();
         String command = messageText.split(" ")[0];
-        long chatId = update.getMessage().getChatId();
 
         var commandHandler = commands.get(command);
-        if (commandHandler != null) {
+        if (Objects.nonNull(commandHandler)) {
             return commandHandler.apply(update);
         } else {
-            return new SendMessage(String.valueOf(chatId), "Command not found");
+            return new SendMessage(getChatId(update), "Command not found");
         }
     }
 }

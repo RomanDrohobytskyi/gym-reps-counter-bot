@@ -11,8 +11,13 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class UserWorkoutData {
     private final Exercise exercise;
+    private final Long chatId;
     private Date startTime = new Date();
     private String weight;
     private String reps;
     private String sets;
+
+    public String getStringChatId() {
+        return String.valueOf(this.chatId);
+    }
 }

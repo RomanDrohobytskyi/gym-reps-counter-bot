@@ -4,6 +4,7 @@ import gym.reps.counter.database.repository.ExerciseRepository;
 import gym.reps.counter.database.repository.MuscleGroupRepository;
 import gym.reps.counter.model.entity.Exercise;
 import gym.reps.counter.model.entity.MuscleGroup;
+import gym.reps.counter.utils.BotUpdateUtil;
 import gym.reps.counter.utils.JsonUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,11 +25,10 @@ public class NewExerciseCallback implements CallbackHandler {
 
     @Override
     public SendMessage apply(Callback callback, Update update) {
-        long chatId = update.getCallbackQuery().getMessage().getChatId();
         Long muscleGroupId = Long.valueOf(callback.getData());
         MuscleGroup muscleGroup = muscleGroupRepository.findById(muscleGroupId)
                 .orElseThrow(() -> new IllegalArgumentException("No Muscle Group found for id: " + muscleGroupId));
-        SendMessage answer = new SendMessage(String.valueOf(chatId), String.format(CHOOSE_EXERCISE_MESSAGE, muscleGroup.getName()));
+        SendMessage answer = new SendMessage(BotUpdateUtil.getChatId(update), String.format(CHOOSE_EXERCISE_MESSAGE, muscleGroup.getName()));
         addTypesKeyboard(answer, muscleGroup);
         return answer;
     }

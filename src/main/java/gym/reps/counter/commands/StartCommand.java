@@ -13,6 +13,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
+import static gym.reps.counter.utils.BotUpdateUtil.getChatId;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -22,12 +24,8 @@ public class StartCommand implements Command {
 
     @Override
     public SendMessage apply(Update update) {
-        long chatId = update.getMessage().getChatId();
         String username = update.getMessage().getFrom().getUserName();
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
-        sendMessage.setText(String.format(START_MESSAGE, username));
-
+        SendMessage sendMessage = new SendMessage(getChatId(update), START_MESSAGE.formatted(username));
         addStartKeyboardOptions(sendMessage);
         return sendMessage;
     }
@@ -36,13 +34,11 @@ public class StartCommand implements Command {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
         List<InlineKeyboardButton> keyboardButtonsRow = new ArrayList<>();
 
-
         InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
         inlineKeyboardButton.setText("New workout");
         String jsonCallback = JsonUtil.toJson(List.of(CallbackType.NEW_WORKOUT, "New workout"));
         inlineKeyboardButton.setCallbackData(jsonCallback);
         keyboardButtonsRow.add(inlineKeyboardButton);
-
 
         List<List<InlineKeyboardButton>> rowList = new ArrayList<>();
         rowList.add(keyboardButtonsRow);

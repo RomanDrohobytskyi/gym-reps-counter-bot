@@ -11,12 +11,14 @@ import org.telegram.telegrambots.meta.bots.AbsSender;
 import java.util.List;
 import java.util.Map;
 
+import static gym.reps.counter.utils.BotUpdateUtil.getCallbackChatId;
+
 @Slf4j
 @Component
 public class CallbacksHandler {
 
     private final Map<CallbackType, CallbackHandler> callbacks;
-    private final Map<CallbackType, CallbackHandler> callbacksWithNestedInpt;
+    private final Map<CallbackType, CallbackHandler> callbacksWithNestedInput;
 
     public CallbacksHandler(NewWorkoutCallback newWorkoutCallback,
                             NewExerciseCallback newExerciseCallback,
@@ -24,27 +26,23 @@ public class CallbacksHandler {
         this.callbacks = Map.of(CallbackType.NEW_WORKOUT, newWorkoutCallback,
                 CallbackType.NEW_EXERCISE, newExerciseCallback,
                 CallbackType.CHOSEN_EXERCISE, registerExerciseCallback);
-        this.callbacksWithNestedInpt = Map.of(CallbackType.CHOSEN_EXERCISE, registerExerciseCallback);
+        this.callbacksWithNestedInput = Map.of(CallbackType.CHOSEN_EXERCISE, registerExerciseCallback);
     }
 
     public SendMessage handleCallbacks(AbsSender bot, Update update) {
         if (update.hasCallbackQuery()) {
-
             List<String> callbackQueryData = JsonUtil.toList(update.getCallbackQuery().getData());
-            long chatId = update.getCallbackQuery().getMessage().getChatId();
 
             if (CollectionUtils.isEmpty(callbackQueryData)) {
+                long chatId = getCallbackChatId(update.getCallbackQuery());
                 return new SendMessage(String.valueOf(chatId), "Callback is empty");
             } else {
-                Callback callback = Callback.builder()
-                        .callbackType(CallbackType.valueOf(callbackQueryData.get(0)))
-                        .data(callbackQueryData.get(1))
-                        .build();
+                Callback callback = Callback.of(callbackQueryData);
                 CallbackHandler callbackHandler = callbacks.get(callback.getCallbackType());
-                return callbackHandler.apply(bot, callback, update);
+                return callbackHandler.apply(callback, update);
             }
         }
 
-        return callbacksWithNestedInpt.get(CallbackType.CHOSEN_EXERCISE).apply(bot, null, update);
+        return callbacksWithNestedInput.get(CallbackType.CHOSEN_EXERCISE).apply(null, update);
     }
 }

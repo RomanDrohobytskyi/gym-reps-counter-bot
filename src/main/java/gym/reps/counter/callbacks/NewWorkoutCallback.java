@@ -12,6 +12,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import java.util.List;
 
+import static gym.reps.counter.utils.BotUpdateUtil.getCallbackChatIdAsString;
+
 @Component
 @RequiredArgsConstructor
 public class NewWorkoutCallback implements CallbackHandler {
@@ -20,27 +22,14 @@ public class NewWorkoutCallback implements CallbackHandler {
 
     @Override
     public SendMessage apply(Callback callback, Update update) {
-        long chatId = update.getCallbackQuery().getMessage().getChatId();
-        SendMessage answer = new SendMessage(String.valueOf(chatId), "Choose muscle group");
+        String chatId = getCallbackChatIdAsString(update.getCallbackQuery());
+        SendMessage answer = new SendMessage(chatId, "Choose muscle group");
         addTypesKeyboard(answer);
         return answer;
     }
 
     private void addTypesKeyboard(SendMessage answer) {
         InlineKeyboardMarkup inlineKeyboardMarkup = new InlineKeyboardMarkup();
-        /*List<InlineKeyboardButton> keyboardButtonsRow = muscleGroupRepository.findAll().stream()
-                .map(this::createMuscleGroupButton)
-                .toList();
-*/
-
-        /*Create new*/
-/*        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton();
-        inlineKeyboardButton.setText("New exercise button");
-        String jsonCallback = JsonUtil.toJson(List.of(CallbackType.NEW_EXERCISE, "New exercise"));
-        inlineKeyboardButton.setCallbackData(jsonCallback);
-        keyboardButtonsRow.add(inlineKeyboardButton);*/
-
-
         List<List<InlineKeyboardButton>> rowList = muscleGroupRepository.findAll().stream()
                 .map(muscleGroup -> List.of(createMuscleGroupButton(muscleGroup)))
                 .toList();
