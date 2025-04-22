@@ -28,6 +28,8 @@ public class RegisterExerciseCallback implements CallbackHandler {
     private final WorkoutRepository workoutRepository;
     private Workout currentWorkout;
 
+    /*TODO: add weight -> add reps -> save and next, save and finish (save - creates single rep) */
+
     @Override
     public SendMessage apply(Callback callback, Update update) {
         if (update.hasCallbackQuery()) {
@@ -45,6 +47,12 @@ public class RegisterExerciseCallback implements CallbackHandler {
 
         userWorkoutService.startWorkout(chatId, exercise);
         startWorkout();
+
+        /*Exercise history:
+        * date - weight, reps, sets
+        * date - weight, reps, sets
+        * date - weight, reps, sets
+        *  */
 
         return new SendMessage(chatId.toString(), "You selected " + exercise.getName() + ". Enter weight (kg):");
     }
